@@ -1,0 +1,162 @@
+version: "4.1"
+name: 速度闭环控制
+type: ARM
+deviceName: STM32F405RGTx
+packDir: .pack/Keil/STM32F4xx_DFP.3.1.1
+srcDirs:
+  - CORE
+  - HARDWARE
+  - Library
+  - SYSTEM
+  - USER
+virtualFolder:
+  name: <virtual_root>
+  files: []
+  folders: []
+dependenceList: []
+outDir: build
+miscInfo:
+  uid: 5e43fe169735ad26d3fad467c0d22e94
+targets:
+  Debug:
+    cppPreprocessAttrs:
+      defineList:
+        - USE_STDPERIPH_DRIVER
+        - STM32F40_41xxx
+        - STM32F405xx
+        - HSE_VALUE=8000000
+        - __FPU_PRESENT=1
+        - __FPU_USED=1
+      incList:
+        - .
+        - Library/inc
+        - CORE
+        - SYSTEM
+        - USER
+        - HARDWARE
+      libList: []
+    excludeList:
+      - Library/src/stm32f4xx_cec.c
+      - Library/src/stm32f4xx_cryp.c
+      - Library/src/stm32f4xx_cryp_aes.c
+      - Library/src/stm32f4xx_cryp_des.c
+      - Library/src/stm32f4xx_cryp_tdes.c
+      - Library/src/stm32f4xx_dfsdm.c
+      - Library/src/stm32f4xx_dma2d.c
+      - Library/src/stm32f4xx_dsi.c
+      - Library/src/stm32f4xx_fmc.c
+      - Library/src/stm32f4xx_fmpi2c.c
+      - Library/src/stm32f4xx_hash.c
+      - Library/src/stm32f4xx_hash_md5.c
+      - Library/src/stm32f4xx_hash_sha1.c
+      - Library/src/stm32f4xx_lptim.c
+      - Library/src/stm32f4xx_ltdc.c
+      - Library/src/stm32f4xx_qspi.c
+      - Library/src/stm32f4xx_sai.c
+      - Library/src/stm32f4xx_spdifrx.c
+    settings:
+      debugger: cortex-debug
+    toolchain: AC5
+    toolchainConfigMap:
+      AC5:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: single
+        options:
+          version: 4
+          afterBuildTasks: []
+          asm-compiler: {}
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            CXX_FLAGS: --diag_suppress=1 --diag_suppress=1295
+            C_FLAGS: --diag_suppress=1 --diag_suppress=1295
+            c99-mode: true
+            one-elf-section-per-function: true
+            optimization: level-0
+            warnings: unspecified
+          global:
+            output-debug-info: enable
+            use-microLIB: true
+          linker:
+            $outputTaskExcludes:
+              - .bin
+            output-format: elf
+        scatterFilePath: <YOUR_SCATTER_FILE>.sct
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x5000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x08000000"
+              tag: IROM
+        useCustomScatterFile: false
+      GCC:
+        archExtensions: ""
+        cpuType: Cortex-M3
+        floatingPointHardware: none
+        options:
+          version: 5
+          afterBuildTasks: []
+          asm-compiler:
+            ASM_FLAGS: ""
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            CXX_FLAGS: ""
+            C_FLAGS: ""
+            language-c: c11
+            language-cpp: c++11
+            one-elf-section-per-data: true
+            one-elf-section-per-function: true
+            optimization: level-debug
+            warnings: all-warnings
+          global:
+            $float-abi-type: hard
+            misc-control: ""
+            not-use-syscalls: true
+            output-debug-info: enable
+            use-newlib-nano: true
+          linker:
+            $outputTaskExcludes:
+              - .bin
+            LD_FLAGS: ""
+            LIB_FLAGS: -lm
+            output-format: elf
+            remove-unused-input-sections: true
+        scatterFilePath: <YOUR_LINKER_SCRIPT>.lds
+        storageLayout:
+          RAM: []
+          ROM: []
+        useCustomScatterFile: true
+    uploadConfigMap:
+      JLink:
+        baseAddr: ""
+        bin: ""
+        cpuInfo:
+          cpuName: "null"
+          vendor: "null"
+        otherCmds: ""
+        proType: 1
+        speed: 8000
+      OpenOCD:
+        baseAddr: "0x08000000"
+        bin: ""
+        interface: cmsis-dap
+        target: stm32f4x
+      pyOCD:
+        baseAddr: "0x08000000"
+        bin: ""
+        config: .eide/debug.pyocd.yaml
+        otherCmds: ""
+        speed: 4M
+        targetName: cortex_m
+    uploader: OpenOCD

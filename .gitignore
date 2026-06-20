@@ -1,0 +1,37 @@
+# dot files
+/.vscode/launch.json
+/.settings
+/.eide/log
+/.eide.usr.ctx.json
+
+# project out
+/build
+/bin
+/obj
+/out
+
+# Keil build output
+/Output/*
+!/Output/BLDC_Driver.hex
+/USER/Listings/
+/USER/Objects/
+/USER/DebugConfig/
+/USER/*.map
+/USER/*.lst
+/USER/*.uvguix.*
+
+# compiler intermediate files
+*.o
+*.d
+*.crf
+*.axf
+*.lnp
+*.dep
+*.htm
+
+# eide template
+*.ept
+*.eide-template
+
+# Optional: uncomment to exclude the local STM32 device pack
+# /.pack/
