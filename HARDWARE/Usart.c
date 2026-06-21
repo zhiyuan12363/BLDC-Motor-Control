@@ -2,11 +2,15 @@
 #include <stdarg.h>
 
 #define USART1_TX_BUF_LEN 128 // USART1异步发送缓冲区长度
+#define USART1_RX_BUF_LEN 32  // USART1接收环形缓冲区长度
 
 static char usart1_tx_buf[USART1_TX_BUF_LEN]; // 当前待发送数据帧
 static volatile uint16_t usart1_tx_len = 0; // 当前数据帧总长度
 static volatile uint16_t usart1_tx_index = 0; // 已发送字节位置
 static volatile uint8_t usart1_tx_busy = 0; // 发送忙标志
+static volatile uint8_t usart1_rx_buf[USART1_RX_BUF_LEN]; // 接收环形缓冲区
+static volatile uint8_t usart1_rx_write = 0; // 接收写入位置
+static volatile uint8_t usart1_rx_read = 0; // 主循环读取位置
 
 /*
     初始化USART1，发送使用TXE中断，避免阻塞主循环换向。
@@ -31,7 +35,7 @@ void Usart1_Init(void)
     USART_InitTypeDef USART_InitStructure; // USART1参数初始化结构体
     USART_InitStructure.USART_BaudRate = 115200;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Tx;
+    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -44,6 +48,7 @@ void Usart1_Init(void)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_Init(&NVIC_InitStructure);
 
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART1, ENABLE);
 }
 
@@ -77,10 +82,37 @@ uint8_t USART1_Async_Printf(const char *fmt, ...)
 }
 
 /*
-    USART1发送空中断，每次发送一个字节。
+    从接收环形缓冲区读取一个字节，无数据时立即返回。
+*/
+uint8_t USART1_Read_Byte(uint8_t *data)
+{
+    if(data == 0 || usart1_rx_read == usart1_rx_write)
+    {
+        return 0;
+    }
+
+    *data = usart1_rx_buf[usart1_rx_read];
+    usart1_rx_read = (uint8_t)((usart1_rx_read + 1) % USART1_RX_BUF_LEN);
+    return 1;
+}
+
+/*
+    USART1中断负责接收字节和逐字节异步发送。
 */
 void USART1_IRQHandler(void)
 {
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+        uint8_t data = (uint8_t)USART_ReceiveData(USART1); // 本次接收字节
+        uint8_t next = (uint8_t)((usart1_rx_write + 1) % USART1_RX_BUF_LEN); // 下一写入位置
+
+        if(next != usart1_rx_read)
+        {
+            usart1_rx_buf[usart1_rx_write] = data;
+            usart1_rx_write = next;
+        }
+    }
+
     if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
     {
         if(usart1_tx_index < usart1_tx_len)

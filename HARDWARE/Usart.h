@@ -6,7 +6,7 @@
 
 void Usart1_Init(void);
 uint8_t USART1_Async_Printf(const char *fmt, ...);
+uint8_t USART1_Read_Byte(uint8_t *data);
 
 #endif
-
 

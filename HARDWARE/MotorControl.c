@@ -469,6 +469,23 @@ void MotorControl_Decrease(void)
 }
 
 /*
+    设置闭环目标转速，并限制在允许范围内。
+*/
+void MotorControl_Set_Target_Rpm(int32_t target_rpm)
+{
+    if(target_rpm < TARGET_RPM_MIN)
+    {
+        target_rpm = TARGET_RPM_MIN;
+    }
+    else if(target_rpm > TARGET_RPM_MAX)
+    {
+        target_rpm = TARGET_RPM_MAX;
+    }
+
+    MotorSpeedPID.target_val = target_rpm;
+}
+
+/*
     仅在停机状态切换电机方向。
 */
 void MotorControl_Toggle_Direction(void)
