@@ -102,6 +102,22 @@ static void Process_Serial_Byte(uint8_t data)
             MotorControl_Toggle_Direction();
             break;
 
+        case 'H':
+        case 'h':
+            if(MotorControl_Is_Running() == 0)
+            {
+                MotorControl_HallPhaseSelfCheck();
+            }
+            break;
+
+        case 'O':
+        case 'o':
+            if(MotorControl_Is_Running() == 0)
+            {
+                MotorControl_AutoOffsetScan();
+            }
+            break;
+
         case 'V':
         case 'v':
             target_active = 1;

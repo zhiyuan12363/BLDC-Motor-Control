@@ -169,6 +169,25 @@ void BLDC_Set_PWM_Duty_x10(uint16_t duty1_x10,
 }
 
 /*
+    强制输出一个上桥PWM、另一下桥常通的导通矢量。
+*/
+void BLDC_Force_Vector(uint8_t high_phase,
+                       uint8_t low_phase,
+                       uint16_t duty_x10)
+{
+    if(high_phase < 1 || high_phase > 3 ||
+       low_phase < 1 || low_phase > 3 ||
+       high_phase == low_phase || duty_x10 == 0)
+    {
+        BLDC_Stop();
+        return;
+    }
+
+    BLDC_Set_PWM_Duty_x10(duty_x10, duty_x10, duty_x10);
+    BLDC_Apply_Commutation(high_phase, low_phase);
+}
+
+/*
     兼容整数百分比接口。
 */
 void BLDC_Set_PWM_Duty(uint16_t duty1, uint16_t duty2, uint16_t duty3)

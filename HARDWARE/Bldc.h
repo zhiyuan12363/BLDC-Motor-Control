@@ -8,6 +8,9 @@ void BLDC_Set_PWM_Duty(uint16_t duty1, uint16_t duty2, uint16_t duty3);
 void BLDC_Set_PWM_Duty_x10(uint16_t duty1_x10,
                            uint16_t duty2_x10,
                            uint16_t duty3_x10);
+void BLDC_Force_Vector(uint8_t high_phase,
+                       uint8_t low_phase,
+                       uint16_t duty_x10);
 void BLDC_Stop(void);
 void BLDC_Commutate(uint8_t hall_state, uint8_t dir);
 
